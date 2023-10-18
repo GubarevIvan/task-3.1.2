@@ -1,17 +1,16 @@
 package ru.itmentor.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmentor.spring.boot_security.demo.model.User;
 import ru.itmentor.spring.boot_security.demo.repositories.UserRepository;
-
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
-public class UserServiceImp implements UserService{
+public class UserServiceImp implements UserService, UserDetailsService {
     private final UserRepository userRepository;
 
     @Autowired
@@ -45,5 +44,15 @@ public class UserServiceImp implements UserService{
     @Override
     public Optional<User> findByUsername(String name) {
         return userRepository.findByUsername(name);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if (user.isEmpty())
+            throw new UsernameNotFoundException("user not found!");
+
+        return new User(user.get());
     }
 }

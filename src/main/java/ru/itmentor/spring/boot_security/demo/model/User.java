@@ -1,7 +1,6 @@
 package ru.itmentor.spring.boot_security.demo.model;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -38,9 +37,12 @@ public class User implements UserDetails {
     @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private Set<Role> roles;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_role_table",
+    joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+    inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private Set<Role> roles = new HashSet<>();
 
     public Set<Role> getRoles() {
         return roles;
@@ -52,11 +54,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<SimpleGrantedAuthority> userRoles = new HashSet<>();
-        userRoles.add(new SimpleGrantedAuthority(Role.class.getName()));
-        System.out.println(userRoles);
-        return Collections.synchronizedSet(userRoles);
-//        return null;
+        return this.roles;
     }
 
     public String getPassword() {
@@ -83,6 +81,14 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.roles = roles;
+    }
+    public User(User client) {
+        this.username = client.getUsername();
+        this.lastName = client.getLastName();
+        this.age = client.getAge();
+        this.email = client.getEmail();
+        this.password = client.getPassword();
+        this.roles = client.getRoles();
     }
 
     public String getEmail() {

@@ -7,16 +7,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.itmentor.spring.boot_security.demo.service.UserDetailsServiceImp;
+import ru.itmentor.spring.boot_security.demo.service.UserServiceImp;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SuccessUserHandler successUserHandler;
-    private final UserDetailsServiceImp userDetailsServiceImp;
+    private final UserServiceImp userDetailsServiceImp;
 
     @Autowired
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserDetailsServiceImp userDetailsService) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserServiceImp userDetailsService) {
         this.successUserHandler = successUserHandler;
         this.userDetailsServiceImp = userDetailsService;
     }
@@ -25,7 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable() //отключае защиту
                 .authorizeRequests()
-                .antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/auth/admin").hasRole("ADMIN")
                 .antMatchers("/users").hasRole("ADMIN")
                 .antMatchers("/", "/index", "/auth/registration", "/auth/login", "/error").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")

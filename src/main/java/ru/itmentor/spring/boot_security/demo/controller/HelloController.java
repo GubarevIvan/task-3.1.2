@@ -4,18 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import ru.itmentor.spring.boot_security.demo.model.User;
-import ru.itmentor.spring.boot_security.demo.service.UserService;
+import org.springframework.web.bind.annotation.*;
+import ru.itmentor.spring.boot_security.demo.model.*;
+import ru.itmentor.spring.boot_security.demo.service.*;
 import java.util.*;
 
 @Controller
 public class HelloController {
     public final UserService userService;
 
+    public final RoleService roleService;
+
     @Autowired
-    public HelloController(UserService userService) {
+    public HelloController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping(value = "/")
@@ -33,6 +36,18 @@ public class HelloController {
         Optional<User> user =  userService.findByUsername(name);
 
         model.addAttribute("user", user.get());
+
         return "/user";
+    }
+
+    @PatchMapping("/user")
+    public String addAdmin() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user =  userService.findByUsername(name).get();
+        Role role = roleService.findByUserRole("ROLE_ADMIN").get();
+        Set<Role> roles = user.getRoles();
+        roles.add(role);
+        user.setRole(roles);
+        return "redirect:/auth/admin";
     }
 }
