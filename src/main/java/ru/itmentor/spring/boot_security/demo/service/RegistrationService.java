@@ -9,6 +9,7 @@ import ru.itmentor.spring.boot_security.demo.repositories.*;
 import java.util.*;
 
 @Service
+@Transactional
 public class RegistrationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -21,14 +22,16 @@ public class RegistrationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
     public void registration(User user) {
         Set<Role> roles = new HashSet<>();
         Role role1 = roleRepository.findByUserRole("ROLE_USER").get();
         roles.add(role1);
         user.setRole(roles);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+    }
+
+    public void logIn(User user) {
+        User userNew = new User(user);
     }
 }

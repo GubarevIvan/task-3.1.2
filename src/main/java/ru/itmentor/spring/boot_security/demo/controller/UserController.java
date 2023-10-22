@@ -6,19 +6,21 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.itmentor.spring.boot_security.demo.model.User;
+import ru.itmentor.spring.boot_security.demo.service.RegistrationService;
 import ru.itmentor.spring.boot_security.demo.service.UserService;
-
 import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/users")
 public class UserController {
    private final UserService userService;
+   private final RegistrationService registrationService;
 
    @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RegistrationService registrationService) {
         this.userService = userService;
-    }
+       this.registrationService = registrationService;
+   }
 
     @GetMapping()
     public String index(Model model) {
@@ -40,7 +42,7 @@ public class UserController {
     public String create(@ModelAttribute("user") @Valid User user,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) return "/users/new";
-        userService.save(user);
+        registrationService.registration(user);
         return "redirect:/users";
     }
     @GetMapping("/{id}/edit")

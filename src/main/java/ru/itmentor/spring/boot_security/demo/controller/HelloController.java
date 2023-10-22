@@ -11,13 +11,15 @@ import java.util.*;
 
 @Controller
 public class HelloController {
-    public final UserService userService;
+    public final UserServiceImp userService;
+    public final RegistrationService registrationService;
 
     public final RoleService roleService;
 
     @Autowired
-    public HelloController(UserService userService, RoleService roleService) {
+    public HelloController(UserServiceImp userService, RegistrationService registrationService, RoleService roleService) {
         this.userService = userService;
+        this.registrationService = registrationService;
         this.roleService = roleService;
     }
 
@@ -43,11 +45,12 @@ public class HelloController {
     @PatchMapping("/user")
     public String addAdmin() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user =  userService.findByUsername(name).get();
+        User user = userService.findByUsername(name).get();
         Role role = roleService.findByUserRole("ROLE_ADMIN").get();
         Set<Role> roles = user.getRoles();
         roles.add(role);
         user.setRole(roles);
-        return "redirect:/auth/admin";
+        registrationService.logIn(user);
+        return "redirect:/auth/login";
     }
 }
