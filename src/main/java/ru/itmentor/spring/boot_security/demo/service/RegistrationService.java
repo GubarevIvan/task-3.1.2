@@ -24,8 +24,8 @@ public class RegistrationService {
 
     public void registration(User user) {
         Set<Role> roles = new HashSet<>();
-        Role role1 = roleRepository.findByUserRole("ROLE_USER").get();
-        roles.add(role1);
+        Role role = roleRepository.findByUserRole("ROLE_USER").get();
+        roles.add(role);
         user.setRole(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);

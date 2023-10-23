@@ -51,10 +51,12 @@ public class UserController {
         return "/users/edit";
     }
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("users") @Valid User user,
-                         BindingResult bindingResult, @PathVariable("id") int id) {
+    public String update(@ModelAttribute("user") @Valid User user,
+                         BindingResult bindingResult, @PathVariable("id") long id) {
+
         if (bindingResult.hasErrors()) return "/users/edit";
-        userService.update((long) id, user);
+
+        userService.update(id, user);
         return "redirect:/users";
     }
 
